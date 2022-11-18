@@ -12,12 +12,14 @@
     "lint": "eslint '*/**/*.{js,ts}' --quiet --fix"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.108",
     "@types/jest": "^27.5.2",
     "@types/node": "10.17.27",
     "@types/prettier": "2.6.0",
     "@typescript-eslint/eslint-plugin": "^5.43.0",
     "@typescript-eslint/parser": "^5.43.0",
     "aws-cdk": "2.50.0",
+    "esbuild": "^0.15.14",
     "eslint": "^8.27.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -29,6 +31,8 @@
   },
   "dependencies": {
     "aws-cdk-lib": "2.50.0",
-    "constructs": "^10.0.0"
+    "aws-sdk": "^2.1257.0",
+    "constructs": "^10.0.0",
+    "source-map-support": "^0.5.21"
   }
 }
