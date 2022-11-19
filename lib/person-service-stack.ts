@@ -5,47 +5,40 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as path from 'path';
+import cdk = require('aws-cdk-lib');
 
 export class PersonServiceStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
         const table = new Table(this, 'Person', {
+            tableName: 'Person',
             partitionKey: { name: 'phoneNumber', type: AttributeType.NUMBER },
-        });
-
-        const getPersonLambda = new NodejsFunction(this, 'personLambdaHandler', {
-            runtime: Runtime.NODEJS_14_X,
-            entry: path.join(__dirname, `/../src/domain/person/functions/get-person.ts`),
-            handler: 'getPerson',
-            environment: {
-                HELLO_TABLE_NAME: table.tableName,
-            },
-            bundling: {
-                externalModules: ['aws-sdk'],
-                nodeModules: ['aws-sdk'],
-            },
         });
 
         const createPersonLambda = new NodejsFunction(this, 'createPersonHandler', {
             runtime: Runtime.NODEJS_14_X,
+            timeout: cdk.Duration.seconds(300),
             entry: path.join(__dirname, `/../src/domain/person/functions/create-person.ts`),
             handler: 'createPersonHandler',
-            environment: {
-                HELLO_TABLE_NAME: table.tableName,
-            },
             bundling: {
                 externalModules: ['aws-sdk'],
                 nodeModules: ['aws-sdk'],
             },
+            environment: {
+                REGION: cdk.Stack.of(this).region,
+            },
         });
 
-        table.grantReadWriteData(getPersonLambda);
+        table.grantReadWriteData(createPersonLambda);
 
-        const api = new apigateway.RestApi(this, 'api');
+        const api = new apigateway.LambdaRestApi(this, 'beer-api', {
+            handler: createPersonLambda,
+            proxy: false,
+        });
 
         const person = api.root.addResource('person');
-        person.addMethod('GET', new apigateway.LambdaIntegration(getPersonLambda, { proxy: true }));
-        person.addMethod('POST', new apigateway.LambdaIntegration(createPersonLambda, { proxy: true }));
+
+        person.addMethod('PUT', new apigateway.LambdaIntegration(createPersonLambda));
     }
 }
