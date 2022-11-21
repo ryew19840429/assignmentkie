@@ -1,8 +1,9 @@
-import { Person } from '../../../../../src/domain/person/models/person.model';
+import { Person, PersonEvent } from '../../../../../src/domain/person/models/person.model';
 import { PersonService } from '../../../../../src/domain/person/services/person.services';
 import AWS = require('aws-sdk');
 import AWSMock = require('aws-sdk-mock');
 import { PutItemInput } from 'aws-sdk/clients/dynamodb';
+import { SNSClient } from '@aws-sdk/client-sns';
 
 beforeEach(() => {
     process.env.AWS_REGION = 'eu-west-1';
@@ -37,5 +38,16 @@ describe('PersonService', () => {
             Item: { address: 'somewhere', firstName: 'john', lastName: 'doe', phoneNumber: 123456 },
             TableName: 'testTableName',
         });
+    });
+
+    test('method: raisePersonCreatedEvent', async () => {
+        const snsClient = new SNSClient({});
+        const personEventMock: PersonEvent = {
+            action: 'test action',
+            phoneNumber: 123456,
+        };
+        const sendSpy = jest.spyOn(snsClient, 'send').mockImplementation(jest.fn());
+        await PersonService.raisePersonCreatedEvent(personEventMock, snsClient, 'test:arn');
+        expect(sendSpy).toBeCalled();
     });
 });
