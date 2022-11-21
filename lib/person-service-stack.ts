@@ -33,7 +33,7 @@ export class PersonServiceStack extends Stack {
 
         table.grantReadWriteData(createPersonLambda);
 
-        const api = new apigateway.LambdaRestApi(this, 'beer-api', {
+        const api = new apigateway.LambdaRestApi(this, 'person-api', {
             handler: createPersonLambda,
             proxy: false,
         });
