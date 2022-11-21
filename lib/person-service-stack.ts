@@ -26,7 +26,8 @@ export class PersonServiceStack extends Stack {
                 nodeModules: ['aws-sdk'],
             },
             environment: {
-                REGION: cdk.Stack.of(this).region,
+                AWS_HOST: process.env.AWS_HOST ?? '',
+                TABLE_NAME: table.tableName,
             },
         });
 

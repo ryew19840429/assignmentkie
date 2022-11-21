@@ -1,14 +1,21 @@
 import { APIGatewayEvent, APIGatewayProxyResult, Handler } from 'aws-lambda';
 
 import { DynamoDB } from 'aws-sdk';
+import { Environments, LocalStackConfig } from '../../../../lib/person-service-stack.enum';
 import { HttpResponseCodes } from '../constants/person.enums';
 import { Person } from '../models/person.model';
 import { PersonService } from '../services/person.services';
 
-const dynamo = new DynamoDB.DocumentClient({
-    endpoint: `http://localstack:4566`,
+const TABLE_NAME: string = process.env.TABLE_NAME ?? '';
+const AWS_HOST: string = process.env.AWS_HOST ?? '';
+
+let dynamoClient = new DynamoDB.DocumentClient({
+    endpoint: LocalStackConfig.endpoint,
 });
-const tableName = 'Person';
+
+if (AWS_HOST === Environments.production) {
+    dynamoClient = new DynamoDB.DocumentClient();
+}
 
 export const createPersonHandler: Handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
     let body = '';
@@ -29,9 +36,9 @@ export const createPersonHandler: Handler = async (event: APIGatewayEvent): Prom
     }
 
     try {
-        await PersonService.putPerson(requestJSON, tableName, dynamo);
+        await PersonService.putPerson(requestJSON, TABLE_NAME, dynamoClient);
         statusCode = HttpResponseCodes.ok;
-        body = JSON.stringify('person created with');
+        body = JSON.stringify(`person created with phone number: ${requestJSON.phoneNumber}`);
         return PersonService.handlerResponse(body, statusCode);
     } catch (e) {
         statusCode = 400;
