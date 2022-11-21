@@ -20,7 +20,6 @@ if (AWS_HOST === Environments.production) {
 export const createPersonHandler: Handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
     let body = '';
     let statusCode = HttpResponseCodes.ok;
-
     if (!event.body) {
         body = JSON.stringify('no person data given');
         statusCode = HttpResponseCodes.badRequest;
@@ -30,7 +29,7 @@ export const createPersonHandler: Handler = async (event: APIGatewayEvent): Prom
     const requestJSON: Person = JSON.parse(event.body);
 
     if (!requestJSON.phoneNumber) {
-        body = JSON.stringify('phone number is requred');
+        body = JSON.stringify('phone number is required');
         statusCode = HttpResponseCodes.badRequest;
         return PersonService.handlerResponse(body, statusCode);
     }
