@@ -31,6 +31,8 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
+    "@aws-cdk/aws-sns": "^1.181.0",
+    "@aws-sdk/client-sns": "^3.215.0",
     "aws-cdk-lib": "2.50.0",
     "aws-sdk": "^2.1257.0",
     "constructs": "^10.0.0",

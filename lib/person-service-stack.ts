@@ -6,10 +6,15 @@ import { Construct } from 'constructs';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as path from 'path';
 import cdk = require('aws-cdk-lib');
-
+import * as sns from 'aws-cdk-lib/aws-sns';
 export class PersonServiceStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
+
+        const topic = new sns.Topic(this, 'person-created', {
+            topicName: 'person-created-topic',
+            displayName: 'Person Created SNS Topic',
+        });
 
         const table = new Table(this, 'Person', {
             tableName: 'Person',
@@ -28,6 +33,8 @@ export class PersonServiceStack extends Stack {
             environment: {
                 AWS_HOST: process.env.AWS_HOST ?? '',
                 TABLE_NAME: table.tableName,
+                SNS_TOPIC_ARN: topic.topicArn,
+                REGION: 'eu-west-1',
             },
         });
 
