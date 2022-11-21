@@ -21,7 +21,8 @@ describe('PersonService', () => {
 
     test('method: putPerson', async () => {
         AWSMock.setSDKInstance(AWS);
-        AWSMock.mock('DynamoDB.DocumentClient', 'put', (params: PutItemInput, callback: any) => {
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        AWSMock.mock('DynamoDB.DocumentClient', 'put', (params: PutItemInput, callback: Function) => {
             callback(null, {});
         });
         const dynamodb = new AWS.DynamoDB.DocumentClient();
