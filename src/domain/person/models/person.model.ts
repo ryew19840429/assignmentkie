@@ -1,4 +1,4 @@
-export interface PersonModel {
+export interface Person {
     phoneNumber: number;
     firstName: string;
     lastName: string;
