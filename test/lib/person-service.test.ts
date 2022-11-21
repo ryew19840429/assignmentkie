@@ -29,6 +29,10 @@ test('Resources are created', () => {
     template.hasResourceProperties('AWS::ApiGateway::RestApi', {
         Name: 'person-api',
     });
+    template.hasResourceProperties('AWS::SNS::Topic', {
+        DisplayName: 'Person Created SNS Topic',
+        TopicName: 'person-created-topic',
+    });
     template.hasResourceProperties('AWS::Lambda::Function', {
         Handler: 'index.createPersonHandler',
         Runtime: 'nodejs14.x',

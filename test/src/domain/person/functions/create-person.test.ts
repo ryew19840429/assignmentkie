@@ -2,6 +2,7 @@ import { APIGatewayEvent, Context } from 'aws-lambda';
 import { createPersonHandler } from '../../../../../src/domain/person/functions/create-person';
 import { PersonService } from '../../../../../src/domain/person/services/person.services';
 const putPersonSpy = jest.spyOn(PersonService, 'putPerson').mockImplementation(jest.fn());
+const raisePersonCreatedEventSpy = jest.spyOn(PersonService, 'raisePersonCreatedEvent').mockImplementation(jest.fn());
 
 const mockContext: Context = {
     awsRequestId: 'dummyAwsRequestId',
@@ -25,6 +26,8 @@ describe('CreatePersonHandler', () => {
         } as APIGatewayEvent;
         const response = await createPersonHandler(mockEvent, mockContext, mockCallback);
         expect(response).toStrictEqual({ statusCode: 400, body: '"no person data given"' });
+        expect(putPersonSpy).not.toBeCalled();
+        expect(raisePersonCreatedEventSpy).not.toBeCalled();
     });
 
     test('method: handlerResponse when phone number is missing', async () => {
@@ -33,6 +36,8 @@ describe('CreatePersonHandler', () => {
         } as APIGatewayEvent;
         const response = await createPersonHandler(mockEvent, mockContext, mockCallback);
         expect(response).toStrictEqual({ statusCode: 400, body: '"phone number is required"' });
+        expect(putPersonSpy).not.toBeCalled();
+        expect(raisePersonCreatedEventSpy).not.toBeCalled();
     });
 
     test('method: handlerResponse when full person data is given', async () => {
@@ -42,5 +47,6 @@ describe('CreatePersonHandler', () => {
         const response = await createPersonHandler(mockEvent, mockContext, mockCallback);
         expect(response).toStrictEqual({ body: '"person created with phone number: 123456"', statusCode: 200 });
         expect(putPersonSpy).toBeCalled();
+        expect(raisePersonCreatedEventSpy).toBeCalled();
     });
 });
