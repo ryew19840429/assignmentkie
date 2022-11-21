@@ -1,10 +1,12 @@
 *.js
 !jest.config.js
+!.eslintrc.js
+!.prettierrc.js
 *.d.ts
 node_modules
+.vscode/
+localstack/volume/*
 
 # CDK asset staging directory
 .cdk.staging
 cdk.out
-.vscode/
-localstack/volume/*
