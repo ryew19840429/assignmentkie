@@ -13,7 +13,11 @@ To test out on postman, follow this example pattern:
 `http://localhost:4566/restapis/clgy3se17b/prod/_user_request_/person`
 
 ## Architecture overview
+For this assignment:
 api gateway -> lambda -> dynamodb -> sns
+
+For high throughput, probably:
+api gateway -> lambda -> sns (so other services can use this api call event) -> sqs (to buffer inserts) -> lambda -> dynamodb -> sns
 
 ## Useful commands
 * `npm run build`   compile typescript to js
